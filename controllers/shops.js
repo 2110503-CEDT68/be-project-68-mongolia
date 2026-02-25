@@ -1,5 +1,5 @@
-const MassageShop = require('../models/MassageShop');
-const MassageReservation = require('../models/MassageReservation');
+const Shop = require('../models/Shop');
+const Reservation = require('../models/Reservation');
 
 //@desc   Get all MassageShop
 //@route  GET /api/v1/shops
@@ -21,7 +21,7 @@ exports.getShops= async (req,res,next)=>{
 
     queryStr=queryStr.replace(/\b(gt|gte|lt|lte|in)\b/g, match=>`$${match}`);
 
-    query=shops.find(JSON.parse(queryStr)).populate('reservations');
+    query=MassageShop.find(JSON.parse(queryStr)).populate('reservations');
 
     //Select Fields
     if(req.query.select){

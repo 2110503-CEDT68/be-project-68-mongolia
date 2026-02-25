@@ -5,6 +5,10 @@ const MassageReservationSchema = new mongoose.Schema({
         type:Date,
         required:true
     },
+    reserveTime:{
+        type:String,
+        required:true
+    },
     user: {
         type:mongoose.Schema.ObjectId,
         ref: 'User',
@@ -12,7 +16,7 @@ const MassageReservationSchema = new mongoose.Schema({
     },
     shop: {
         type:mongoose.Schema.ObjectId,
-        ref: 'MassageShop',
+        ref: 'Shop',
         required:true
     },
     createdAt: {
@@ -21,4 +25,4 @@ const MassageReservationSchema = new mongoose.Schema({
     }
 });
 
-module.exports=mongoose.model('MassageReservation', MassageReservationSchema);
+module.exports=mongoose.model('Reservation', MassageReservationSchema);
