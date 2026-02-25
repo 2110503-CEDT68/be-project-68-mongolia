@@ -21,7 +21,7 @@ exports.getShops= async (req,res,next)=>{
 
     queryStr=queryStr.replace(/\b(gt|gte|lt|lte|in)\b/g, match=>`$${match}`);
 
-    query=MassageShop.find(JSON.parse(queryStr)).populate('reservations');
+    query=Shop.find(JSON.parse(queryStr)).populate('reservations');
 
     //Select Fields
     if(req.query.select){
@@ -43,7 +43,7 @@ exports.getShops= async (req,res,next)=>{
     const endIndex=page*limit;
     
     try{
-        const total=await MassageShop.countDocuments();
+        const total=await Shop.countDocuments();
         query=query.skip(startIndex).limit(limit);
         //Executing query
         const shops = await query;
@@ -79,7 +79,7 @@ exports.getShops= async (req,res,next)=>{
 exports.getShop= async (req,res,next)=>{
     try{
 
-        const shop = await MassageShop.findById(req.params.id);
+        const shop = await Shop.findById(req.params.id);
 
         if(!shop){
             return res.status(400).json({success:false});
@@ -99,7 +99,7 @@ exports.getShop= async (req,res,next)=>{
 //@route  POST /api/v1/shops
 //@access Private
 exports.createShop= async (req,res,next)=>{
-    const shop = await MassageShop.create(req.body);
+    const shop = await Shop.create(req.body);
     res.status(201).json({
         success: true,
         data:shop
@@ -111,7 +111,7 @@ exports.createShop= async (req,res,next)=>{
 //@access Private
 exports.updateShop= async (req,res,next)=>{
     try{
-        const shop = await MassageShop.findByIdAndUpdate(req.params.id, req.body, {
+        const shop = await Shop.findByIdAndUpdate(req.params.id, req.body, {
             new:true,
             runValidators:true
         });
@@ -132,13 +132,13 @@ exports.updateShop= async (req,res,next)=>{
 //@access Private
 exports.deleteShop= async (req,res,next)=>{
     try{
-        const shop = await MassageShop.findById(req.params.id);
+        const shop = await Shop.findById(req.params.id);
 
         if(!shop){
            return res.status(404).json({success:false, message:`Shop not found with id of ${req.params.id}`});
         }
-        await MassageReservation.deleteMany({shop : req.params.id});
-        await MassageShop.deleteOne({_id: req.params.id});
+        await Reservation.deleteMany({shop : req.params.id});
+        await Shop.deleteOne({_id: req.params.id});
         res.status(200).json({success:true, data:{}});
     }
     catch(err){
