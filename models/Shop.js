@@ -30,9 +30,9 @@ const MassageShopSchema = new mongoose.Schema({
 
 //Reverse populate with virtuals
 MassageShopSchema.virtual('reservations',{
-    ref: 'MassageReservation',
+    ref: 'Reservation',
     localField: '_id',
-    foreignField: 'Reservation',
+    foreignField: 'shop',
     justOne: false
 });
 module.exports=mongoose.model('Shop', MassageShopSchema);

@@ -21,28 +21,26 @@ exports.getShops= async (req,res,next)=>{
 
     queryStr=queryStr.replace(/\b(gt|gte|lt|lte|in)\b/g, match=>`$${match}`);
 
-    query=Shop.find(JSON.parse(queryStr)).populate('reservations');
-
-    //Select Fields
-    if(req.query.select){
-        const fields=req.query.select.split(',').join(' ');
-        query=query.select(fields);
-    }
-    //sort
-    if(req.query.sort){
-        const sortBy=req.query.sort.split(',').join(' ');
-        query=query.sort(sortBy);
-    }
-    else{
-        query=query.sort('-createdAt');
-    }
-    //Pagination
-    const page=parseInt(req.query.page,10) || 1;
-    const limit=parseInt(req.query.limit,10) || 25;
-    const startIndex=(page-1)*limit;
-    const endIndex=page*limit;
-    
     try{
+        query=Shop.find(JSON.parse(queryStr)).populate('reservations');
+
+        //Select Fields
+        if(req.query.select){
+            const fields=req.query.select.split(',').join(' ');
+            query=query.select(fields);
+        }
+        //sort
+        if(req.query.sort){
+            const sortBy=req.query.sort.split(',').join(' ');
+            query=query.sort(sortBy);
+        }
+
+        //Pagination
+        const page=parseInt(req.query.page,10) || 1;
+        const limit=parseInt(req.query.limit,10) || 25;
+        const startIndex=(page-1)*limit;
+        const endIndex=page*limit;
+
         const total=await Shop.countDocuments();
         query=query.skip(startIndex).limit(limit);
         //Executing query
@@ -89,7 +87,7 @@ exports.getShop= async (req,res,next)=>{
 
     } 
     catch(err){
-
+        console.log(err.stack);
         res.status(400).json({success:false});
 
     } 

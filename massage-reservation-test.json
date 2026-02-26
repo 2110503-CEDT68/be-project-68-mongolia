@@ -1,0 +1,222 @@
+{
+  "info": {
+    "name": "Massage Reservation API Testcases",
+    "_postman_id": "12345678-aaaa-bbbb-cccc-123456789000",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:5000/api/v1" },
+    { "key": "userToken", "value": "" },
+    { "key": "adminToken", "value": "" },
+    { "key": "shopId", "value": "" },
+    { "key": "userReservationId", "value": "" },
+    { "key": "adminReservationId", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "1) User Register",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": "{{baseUrl}}/auth/register",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Test User\",\n  \"telephone\": \"0611495644\",\n  \"email\": \"user1@gmail.com\",\n  \"password\": \"123456\",\n  \"role\": \"user\"\n}"
+        }
+      }
+    },
+    {
+      "name": "2) User Login",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": "{{baseUrl}}/auth/login",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"user1@gmail.com\",\n  \"password\": \"123456\"\n}"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "var jsonData = pm.response.json();",
+              "pm.collectionVariables.set('userToken', jsonData.token);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "3) View Shops",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/shops"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "var jsonData = pm.response.json();",
+              "pm.collectionVariables.set('shopId', jsonData.data[0]._id);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "4) User Create Booking (valid)",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{userToken}}" }
+        ],
+        "url": "{{baseUrl}}/shops/{{shopId}}/reservations",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"reserveDate\": \"2026-03-01\",\n  \"reserveTime\": \"10:00\"\n}"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "var jsonData = pm.response.json();",
+              "pm.collectionVariables.set('userReservationId', jsonData.data._id);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "5) User Create Booking (invalid)",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{userToken}}" }
+        ],
+        "url": "{{baseUrl}}/shops/{{shopId}}/reservations",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"reserveDate\": \"2007-01-01\",\n  \"reserveTime\": \"10:00\"\n}"
+        }
+      }
+    },
+    {
+      "name": "6) User View his/her Bookings",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{userToken}}" }],
+        "url": "{{baseUrl}}/reservations"
+      }
+    },
+    {
+      "name": "7) User Update Booking",
+      "request": {
+        "method": "PUT",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{userToken}}" }
+        ],
+        "url": "{{baseUrl}}/reservations/{{userReservationId}}",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"reserveTime\": \"11:00\"\n}"
+        }
+      }
+    },
+    {
+      "name": "8) User Delete Booking",
+      "request": {
+        "method": "DELETE",
+        "header": [{ "key": "Authorization", "value": "Bearer {{userToken}}" }],
+        "url": "{{baseUrl}}/reservations/{{userReservationId}}"
+      }
+    },
+    {
+      "name": "9) User Logout",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{userToken}}" }],
+        "url": "{{baseUrl}}/auth/logout"
+      }
+    },
+    {
+      "name": "10) Admin Login",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": "{{baseUrl}}/auth/login",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"admin@gmail.com\",\n  \"password\": \"123456\"\n}"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "var jsonData = pm.response.json();",
+              "pm.collectionVariables.set('adminToken', jsonData.token);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "11) Admin Create Booking",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+        ],
+        "url": "{{baseUrl}}/shops/{{shopId}}/reservations",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"reserveDate\": \"2027-03-02\",\n  \"reserveTime\": \"13:00\"\n}"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "var jsonData = pm.response.json();",
+              "pm.collectionVariables.set('adminReservationId', jsonData.data._id);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "12) Admin Update Booking",
+      "request": {
+        "method": "PUT",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+        ],
+        "url": "{{baseUrl}}/reservations/{{adminReservationId}}",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"reserveTime\": \"14:00\"\n}"
+        }
+      }
+    },
+    {
+      "name": "13) Admin Delete Booking",
+      "request": {
+        "method": "DELETE",
+        "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+        "url": "{{baseUrl}}/reservations/{{adminReservationId}}"
+      }
+    }
+  ]
+}
