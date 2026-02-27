@@ -1,0 +1,26 @@
+@startuml Manage Shop (POST)
+
+header Massage Reservation Sequence Diagram
+footer Page %page% of %lastpage%
+title "Manage Shop (POST)"
+
+participant "Client(Admin)" as client
+participant "<<javaScript>>\n:server" as server
+participant "<<router>>\n:shops" as routerShops
+participant "<<middleware>>\n:auth" as authMiddleware
+participant "<<controllers>>\n:shops" as controllersShops
+participant "<<model>>\n:Shop" as modelShop
+database "<<MongoDB>>\n:shops" as ShopsDatabase
+
+client -> server ++: req.post('/api/v1/shops')
+server -> routerShops ++: app.use('/api/v1/shops', shops)
+routerShops -> authMiddleware ++: protect(), authorize('admin')
+authMiddleware --> routerShops --: next()
+routerShops -> controllersShops ++: createShop(req.body)
+controllersShops -> modelShop ++: create(req.body)
+modelShop -> ShopsDatabase ++: ShopSchema
+ShopsDatabase --> modelShop --: shop
+controllersShops <-- modelShop --: shop
+controllersShops -> client --: response(201, shop)
+
+@enduml

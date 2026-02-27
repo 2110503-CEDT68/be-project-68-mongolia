@@ -1,0 +1,30 @@
+@startuml Manage Shop (DELETE)
+
+header Massage Reservation Sequence Diagram
+footer Page %page% of %lastpage%
+title "Manage Shop (DELETE)"
+
+participant "Client(Admin)" as client
+participant "<<javaScript>>\n:server" as server
+participant "<<router>>\n:shops" as routerShops
+participant "<<middleware>>\n:auth" as authMiddleware
+participant "<<controllers>>\n:shops" as controllersShops
+participant "<<model>>\n:Shop" as modelShop
+participant "<<model>>\n:Reservation" as modelReservation
+database "<<MongoDB>>\n:shops" as ShopsDatabase
+database "<<MongoDB>>\n:reservations" as ReservationsDatabase
+
+client -> server ++: req.delete('/api/v1/shops/{id}')
+server -> routerShops ++: app.use('/api/v1/shops', shops)
+routerShops -> authMiddleware ++: protect(), authorize('admin')
+authMiddleware --> routerShops --: next()
+routerShops -> controllersShops ++: deleteShop(id)
+controllersShops -> modelReservation ++: deleteMany({shop:id})
+modelReservation -> ReservationsDatabase ++: ReservationSchema
+ReservationsDatabase --> modelReservation --: ok
+controllersShops -> modelShop ++: deleteOne({_id:id})
+modelShop -> ShopsDatabase ++: ShopSchema
+ShopsDatabase --> modelShop --: ok
+controllersShops -> client --: response(200, success)
+
+@enduml

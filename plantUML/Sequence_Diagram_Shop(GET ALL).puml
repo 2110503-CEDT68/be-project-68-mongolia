@@ -1,0 +1,23 @@
+@startuml Manage Shop (GET ALL)
+
+header Massage Reservation Sequence Diagram
+footer Page %page% of %lastpage%
+title "Manage Shop (GET ALL)"
+
+participant "Client" as client
+participant "<<javaScript>>\n:server" as server
+participant "<<router>>\n:shops" as routerShops
+participant "<<controllers>>\n:shops" as controllersShops
+participant "<<model>>\n:Shop" as modelShop
+database "<<MongoDB>>\n:shops" as ShopsDatabase
+
+client -> server ++: req.get('/api/v1/shops')
+server -> routerShops ++: app.use('/api/v1/shops', shops)
+routerShops -> controllersShops ++: getShops()
+controllersShops -> modelShop ++: find()
+modelShop -> ShopsDatabase ++: ShopSchema
+ShopsDatabase --> modelShop --: shops[]
+controllersShops <-- modelShop --: shops[]
+controllersShops -> client --: response(200, shops[])
+
+@enduml

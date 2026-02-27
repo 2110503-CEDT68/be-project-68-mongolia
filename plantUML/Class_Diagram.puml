@@ -1,0 +1,85 @@
+@startuml MassageReservation System Class Diagram
+left to right direction
+
+package "MassageReservationSystem" {
+
+    class "<<Application>>\nReservationService" as ReservationService {}
+
+    ' ----------- Resources -----------
+    class "<<Resource>>\nShops" as ResourceShops {
+        <<GET>> +getShops(): Shop
+        <<POST>> +createShop(): Shop
+    }
+
+    class "<<Resource>>\nShop" as ResourceShop {
+        <<GET>> +getShop(): Shop
+        <<PUT>> +updateShop(): Shop
+        <<DELETE>> +deleteShop(): void
+    }
+
+    class "<<Resource>>\nAuth" as ResourceAuth {
+        <<POST>> +register(): User
+        <<POST>> +login(): Token
+        <<GET>> +getMe(): User
+        <<GET>> +logout(): void
+    }
+
+    class "<<Resource>>\nReservations" as ResourceReservations {
+        <<GET>> +getReservations(): Reservation
+        <<POST>> +addReservation(): Reservation
+    }
+
+    class "<<Resource>>\nReservation" as ResourceReservation {
+        <<GET>> +getReservation(): Reservation
+        <<PUT>> +updateReservation(): Reservation
+        <<DELETE>> +deleteReservation(): void
+    }
+
+    ' ----------- Representations (Models) -----------
+    class "<<Representation>>\nShop" as RepresentationShop {
+        -name
+        -address
+        -tel
+        -openTime
+        -closeTime
+    }
+
+    class "<<Representation>>\nUser" as RepresentationUser {
+        -name
+        -email
+        -telephone
+        -password
+        -role
+        -createdAt
+    }
+
+    class "<<Representation>>\nReservation" as RepresentationReservation {
+        -reserveDate
+        -reserveTime
+        -createdAt
+    }
+}
+
+' ----------- Paths -----------
+ReservationService ..> ResourceShops : "/api/v1/shops\n<<Path>>"
+ResourceShops ..> ResourceShop : "/{shopId}\n<<Path>>"
+
+ReservationService ..> ResourceAuth : "/api/v1/auth\n<<Path>>"
+
+ReservationService ..> ResourceReservations : "/api/v1/reservations\n<<Path>>"
+ResourceShops ..> ResourceReservations : "/{shopId}/reservations\n<<Path>>"
+ResourceReservations ..> ResourceReservation : "/{reservationId}\n<<Path>>"
+
+' ----------- Uses -----------
+ResourceShop ..> RepresentationShop : "<<use>>"
+ResourceShops ..> RepresentationShop : "<<use>>"
+
+ResourceAuth ..> RepresentationUser : "<<use>>"
+
+ResourceReservations ..> RepresentationReservation : "<<use>>"
+ResourceReservation ..> RepresentationReservation : "<<use>>"
+
+ResourceReservation ..> RepresentationShop : "<<use>>"
+ResourceReservation ..> RepresentationUser : "<<use>>"
+
+@enduml

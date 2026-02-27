@@ -1,0 +1,26 @@
+@startuml Manage Reservation (DELETE)
+
+header Massage Reservation Sequence Diagram
+footer Page %page% of %lastpage%
+title "Manage Reservation (DELETE)"
+
+participant "Client(User/Admin)" as client
+participant "<<javaScript>>\n:server" as server
+participant "<<router>>\n:reservations" as routerReservations
+participant "<<middleware>>\n:auth" as authMiddleware
+participant "<<controllers>>\n:reservations" as controllersReservations
+participant "<<model>>\n:Reservation" as modelReservation
+database "<<MongoDB>>\n:reservations" as ReservationsDatabase
+
+client -> server ++: req.delete('/api/v1/reservations/{id}')
+server -> routerReservations ++: app.use('/api/v1/reservations', reservations)
+routerReservations -> authMiddleware ++: protect(), authorize('admin','user')
+authMiddleware --> routerReservations --: next()
+routerReservations -> controllersReservations ++: deleteReservation(id)
+controllersReservations -> modelReservation ++: findById(id)
+controllersReservations -> modelReservation ++: deleteOne()
+modelReservation -> ReservationsDatabase ++: ReservationSchema
+ReservationsDatabase --> modelReservation --: ok
+controllersReservations -> client --: response(200, success)
+
+@enduml

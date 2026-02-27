@@ -1,0 +1,34 @@
+@startuml Manage Reservation (POST)
+
+header Massage Reservation Sequence Diagram
+footer Page %page% of %lastpage%
+title "Manage Reservation (POST)"
+
+participant "Client(User/Admin)" as client
+participant "<<javaScript>>\n:server" as server
+participant "<<router>>\n:reservations" as routerReservations
+participant "<<middleware>>\n:auth" as authMiddleware
+participant "<<controllers>>\n:reservations" as controllersReservations
+participant "<<model>>\n:Shop" as modelShop
+participant "<<model>>\n:Reservation" as modelReservation
+database "<<MongoDB>>\n:shops" as ShopsDatabase
+database "<<MongoDB>>\n:reservations" as ReservationsDatabase
+
+client -> server ++: req.post('/api/v1/shops/{shopId}/reservations')
+server -> routerReservations ++: app.use('/api/v1/shops/:shopId/reservations', reservations)
+routerReservations -> authMiddleware ++: protect(), authorize('admin','user')
+authMiddleware --> routerReservations --: next()
+routerReservations -> controllersReservations ++: addReservation(req.body)
+controllersReservations -> modelShop ++: findById(shopId)
+modelShop -> ShopsDatabase ++: ShopSchema
+ShopsDatabase --> modelShop --: shop
+controllersReservations -> modelReservation ++: find({user:id})
+modelReservation -> ReservationsDatabase ++: ReservationSchema
+ReservationsDatabase --> modelReservation --: existedReservations
+controllersReservations -> modelReservation ++: create(req.body)
+modelReservation -> ReservationsDatabase ++: ReservationSchema
+ReservationsDatabase --> modelReservation --: reservation
+controllersReservations <-- modelReservation --: reservation
+controllersReservations -> client --: response(200, reservation)
+
+@enduml
