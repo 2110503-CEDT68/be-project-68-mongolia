@@ -77,7 +77,7 @@
         "url": "{{baseUrl}}/shops/{{shopId}}/reservations",
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"reserveDate\": \"2026-03-01\",\n  \"reserveTime\": \"10:00\"\n}"
+          "raw": "{\n  \"reserveDate\": \"2027-03-01\",\n  \"reserveTime\": \"10:00\"\n}"
         }
       },
       "event": [
